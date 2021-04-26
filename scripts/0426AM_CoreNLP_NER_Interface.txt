@@ -1,0 +1,366 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "0426AM_CoreNLP_NER_Interface.ipynb",
+      "provenance": [],
+      "collapsed_sections": [],
+      "toc_visible": true,
+      "machine_shape": "hm"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "eRtRoABPrJix"
+      },
+      "source": [
+        "# Load Tacred Data"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mBfpcMrirNOJ",
+        "outputId": "6da0640c-5059-4abe-a13b-cadb844be4a4"
+      },
+      "source": [
+        "#Tacred data\n",
+        "\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/tacred_sample.json\n",
+        "!cat tacred_sample.json > sample\n",
+        "\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/train.json?raw=true\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/test.json?raw=true\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/dev.json?raw=true\n",
+        "!cat train.json?raw=true > train\n",
+        "!cat test.json?raw=true > test\n",
+        "!cat dev.json?raw=true > dev\n"
+      ],
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "File ‘tacred_sample.json’ already there; not retrieving.\n",
+            "\n",
+            "File ‘train.json?raw=true’ already there; not retrieving.\n",
+            "\n",
+            "File ‘test.json?raw=true’ already there; not retrieving.\n",
+            "\n",
+            "File ‘dev.json?raw=true’ already there; not retrieving.\n",
+            "\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "aMXrQ7FDrTXp"
+      },
+      "source": [
+        "## Have a look at what entity types does our data have\n",
+        "### Result: 23 different types"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SWZA4ZerraOi",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "ff61154b-208f-4f44-e643-a8057cd5c750"
+      },
+      "source": [
+        "import json\n",
+        "from tqdm import tqdm\n",
+        "\n",
+        "# a function to see what types of NE does the data have\n",
+        "# result: 23 different types\n",
+        "def check_NERtypes_json(filename):\n",
+        "  my_set = set()\n",
+        "  with open(filename) as json_file:\n",
+        "    itemData = json.load(json_file)\n",
+        "  for item in itemData:\n",
+        "    if 'subj_type' in item.keys():\n",
+        "      my_set.add(item['subj_type'])\n",
+        "    if 'obj_type' in item.keys():\n",
+        "      my_set.add(item['obj_type'])\n",
+        "    if 'stanford_ner' in item.keys():\n",
+        "      my_set = my_set.union(set(item['stanford_ner']))        \n",
+        "  return my_set\n",
+        "\n",
+        "NER_type_set_train = check_NERtypes_json('train')\n",
+        "lst =list(NER_type_set_train)\n",
+        "sorted_lst = sorted(lst)\n",
+        "print(sorted_lst)\n",
+        "\n",
+        "\n",
+        "def tacred2string(filename):\n",
+        "  text_filename = filename.split('.')[0] + '_text.txt'\n",
+        "  tag_filename = filename.split('.')[0] + '_tag.json'\n",
+        "  text_file = open(text_filename, \"w\")\n",
+        "  tag_file = open(tag_filename, \"w\")\n",
+        "\n",
+        "  tag_dict = dict()\n",
+        "  tag_dict[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  with open(filename) as json_file:\n",
+        "    itemData = json.load(json_file)\n",
+        "  for item in tqdm(itemData): \n",
+        "    # warning: not every sentence in Tacred data ends with a proper terminal punctuations\n",
+        "    # we have to manually add new line to separate the sentences\n",
+        "    if 'token' in item.keys():\n",
+        "      sent = \" \".join(item['token']) + ' \\n'\n",
+        "      text_file.write(sent)    \n",
+        "    \n",
+        "    subj     = {\"text\": \" \".join(item['token'][item['subj_start'] : item['subj_end'] +1]), # end_idx is inclusive in Tacred data\n",
+        "                \"type\": item['subj_type'],\n",
+        "                \"span\": (item['subj_start'], item['subj_end'])} \n",
+        "    obj      = {\"text\": \" \".join(item['token'][item['obj_start'] : item['obj_end'] +1]), # end_idx is inclusive in Tacred data\n",
+        "                \"type\": item['obj_type'],\n",
+        "                \"span\": (item['obj_start'], item['obj_end'])} \n",
+        "    curr_tag = {\"id\": item['id'],\n",
+        "                \"entity\": [subj, obj]}\n",
+        "\n",
+        "    tag_dict[\"sentences\"].append(curr_tag) \n",
+        "\n",
+        "  json.dump(tag_dict, tag_file, indent =2, sort_keys = False)\n",
+        "  text_file.close()\n",
+        "  tag_file.close()\n",
+        "\n",
+        "  return\n",
+        "\n",
+        "def tacred2list(filename):\n",
+        "  document = [] \n",
+        "  tags = [] # for the ith sentence, it has {subj_span, subj_type, obj_span, obj_type}\n",
+        "  with open(filename) as json_file:\n",
+        "    itemData = json.load(json_file)\n",
+        "  for item in tqdm(itemData): \n",
+        "    if 'token' in item.keys():\n",
+        "      sent = \" \".join(item['token']) + ' '     \n",
+        "      document.append(sent)\n",
+        "      document_str += sent\n",
+        "    \n",
+        "    curr_tag = {\"subj_text\": \" \".join(item['token'][item['subj_start'] : item['subj_end'] +1]), # end_idx is inclusive in Tacred data\n",
+        "                \"subj_span\": (item['subj_start'], item['subj_end']), \n",
+        "                \"subj_type\": item['subj_type'],\n",
+        "                \"obj_text\": \" \".join(item['token'][item['obj_start'] : item['obj_end'] +1]), \n",
+        "                \"obj_span\": (item['obj_start'], item['obj_end']),\n",
+        "                \"obj_type\": item['obj_type']}\n",
+        "    tags.append(curr_tag) \n",
+        "\n",
+        "  text_file.write(document_str)\n",
+        "  text_file.close()\n",
+        "\n",
+        "  return (document, tags)"
+      ],
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "['CAUSE_OF_DEATH', 'CITY', 'COUNTRY', 'CRIMINAL_CHARGE', 'DATE', 'DURATION', 'IDEOLOGY', 'LOCATION', 'MISC', 'MONEY', 'NATIONALITY', 'NUMBER', 'O', 'ORDINAL', 'ORGANIZATION', 'PERCENT', 'PERSON', 'RELIGION', 'SET', 'STATE_OR_PROVINCE', 'TIME', 'TITLE', 'URL']\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "3bEdGkqGr03R"
+      },
+      "source": [
+        "## Tacred data pre-processing\n",
+        "#### We will get one text file, which is the pure text input for inference. And a tag file, which is the golden labels"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zfADfYCNr3Rx",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "81edb4e8-1099-4311-e65c-fc5cc06d3821"
+      },
+      "source": [
+        "\n",
+        "tacred2string('train')\n",
+        "tacred2string('test')\n",
+        "tacred2string('dev')"
+      ],
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "100%|██████████| 68124/68124 [00:01<00:00, 50113.93it/s]\n",
+            "100%|██████████| 15509/15509 [00:00<00:00, 145203.58it/s]\n",
+            "100%|██████████| 22631/22631 [00:00<00:00, 68119.82it/s]\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "i0O1BAwDemZJ"
+      },
+      "source": [
+        "### Now, use the Java script to inefernce text file\n",
+        "##### go to the folder of /stanford-corenlp-4.2.0, in command line use the command argument as shown below. Replace <XXX_text.txt> with the text file name, such as train_text.txt. Replace -mx8g with -mx10g if you want to increase the maximum allocated memory from 8gb to 10gb, for example.\n",
+        "\n",
+        "```\n",
+        "java -mx8g -cp '*' edu.stanford.nlp.pipeline.StanfordCoreNLP -annotators 'tokenize,ssplit,pos,lemma,ner' -ssplit.eolonly -file <XXX_text.txt> -outputFormat json\n",
+        "```\n",
+        "\n",
+        "##### After runing the inference script (it will takes up to 20mins), we will get a json output. Don't forget to rename the output as XXX_inference.json.\n",
+        "##### Besides NER results, this inference output has a lot of things we don't really need. Now, we will simplify the inference data to <XXX_simplified.json> and compare it against our tag file.\n",
+        "##### Don't forget: in the inference file, the end index is exclusive, we need to -1 to convert it into inclusive idx to match Tacred\n",
+        "##### This simplified file will be further filtered to only have the entities with the same types as our subject or object. <XXX_filtered.json>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DrBUmmXTerzZ"
+      },
+      "source": [
+        "def simplify_eval_Inference(inf_filename, golden_filename):\n",
+        "  simp_file_name = inf_filename.split('.')[0] + '_simplified.json' \n",
+        "  filt_file_name = inf_filename.split('.')[0] + '_filtered.json' \n",
+        "  simplified_file = open(simp_file_name, \"w\")\n",
+        "  filtered_file = open(filt_file_name, \"w\")\n",
+        "\n",
+        "  tag_dict = dict()\n",
+        "  tag_dict[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  tag_dict_filtered = dict()\n",
+        "  tag_dict_filtered[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  with open(inf_filename) as inf_file, open(golden_filename) as gold_file:\n",
+        "    itemData = json.load(inf_file)['sentences']\n",
+        "    goldData = json.load(gold_file)['sentences']\n",
+        "\n",
+        "  total_num_sent = len(itemData)\n",
+        "  num_T = 2 * total_num_sent\n",
+        "  num_P = 0.0\n",
+        "  num_TP = 0.0\n",
+        "  print(\"===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!=== \", total_num_sent, len(goldData))\n",
+        "  for i in tqdm(range(len(itemData))):\n",
+        "    inf_item, gold_item = itemData[i], goldData[i]\n",
+        "    curr_tag = {\"id\": gold_item['id'], # replace it with real id in gold items\n",
+        "                \"entity\": []}\n",
+        "    curr_tag_filtered = {\"id\": gold_item['id'], # replace it with real id in gold items\n",
+        "                \"entity\": []}\n",
+        "    \n",
+        "    num_P += len(inf_item['entitymentions'])\n",
+        "\n",
+        "    subj = gold_item['entity'][0]\n",
+        "    obj  = gold_item['entity'][1]\n",
+        "    for ent in inf_item['entitymentions']:\n",
+        "      e = {\"text\": ent['text'],\n",
+        "            \"type\": ent['ner'],\n",
+        "            \"span\": (ent['tokenBegin'], ent['tokenEnd'] -1 )} \n",
+        "      curr_tag[\"entity\"].append(e)\n",
+        "      if ent['ner'] == subj['type'] or ent['ner'] == obj['type']:\n",
+        "        curr_tag_filtered[\"entity\"].append(e)\n",
+        "    \n",
+        "      # ===== Check if we found the golden entity =======\n",
+        "      if e['text'] == subj['text'] and e['type'] == subj['type'] and e['span'][0] == subj['span'][0] and e['span'][1] == subj['span'][1]:\n",
+        "        num_TP += 1\n",
+        "      if e['text'] == obj['text'] and e['type'] == obj['type'] and e['span'][0] == obj['span'][0] and e['span'][1] == obj['span'][1]:\n",
+        "        num_TP += 1\n",
+        "\n",
+        "    tag_dict[\"sentences\"].append(curr_tag) \n",
+        "    tag_dict_filtered[\"sentences\"].append(curr_tag_filtered) \n",
+        "\n",
+        "  json.dump(tag_dict, simplified_file, indent =2, sort_keys = False)\n",
+        "  json.dump(tag_dict_filtered, filtered_file, indent =2, sort_keys = False)\n",
+        "  simplified_file.close()\n",
+        "  print(\"=====the simplified inference file is saved!====\")\n",
+        "  filtered_file.close()\n",
+        "  print(\"=====the filtered inference file is saved!====\")\n",
+        "\n",
+        "\n",
+        "  # ====== calculate scores ========\n",
+        "  recall = float(num_TP) / float(num_T)\n",
+        "  precision = float(num_TP) / float(num_P)\n",
+        "  f1_score = 2 * recall * precision / (recall + precision)\n",
+        "\n",
+        "  print(num_T, num_P, num_TP)\n",
+        "  print(\"Recall: \", recall)\n",
+        "  print(\"Precision: \", precision)\n",
+        "  print(\"F1 Score: \", f1_score )\n",
+        "\n",
+        "  return"
+      ],
+      "execution_count": 13,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "y5_PBNWDn1Ci",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "42082ebc-12c6-47dd-cdfc-973e2961abb3"
+      },
+      "source": [
+        "simplify_eval_Inference('train_inference.json', 'train_tag.json')\n",
+        "# simplify_eval_Inference('test_inference.json', 'test_tag.json')\n",
+        "# simplify_eval_Inference('dev_inference.json', 'dev_tag.json')"
+      ],
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "  9%|▊         | 5817/68124 [00:00<00:01, 58161.60it/s]"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!===  68124 68124\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "100%|██████████| 68124/68124 [00:03<00:00, 22268.56it/s]\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "=====the simplified inference file is saved!====\n",
+            "=====the filtered inference file is saved!====\n",
+            "136248 493280.0 103882.0\n",
+            "Recall:  0.7624478891433268\n",
+            "Precision:  0.21059438858254947\n",
+            "F1 Score:  0.3300313885959004\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    }
+  ]
+}

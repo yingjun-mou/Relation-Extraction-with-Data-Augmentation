@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 *.json filter=lfs diff=lfs merge=lfs -text
+=======
+data/dev.json filter=lfs diff=lfs merge=lfs -text
+data/test.json filter=lfs diff=lfs merge=lfs -text
+data/train.json filter=lfs diff=lfs merge=lfs -text
+>>>>>>> b8d154380eb31269a5f9b6f803da66773c7976fc

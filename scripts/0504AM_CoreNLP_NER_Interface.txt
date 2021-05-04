@@ -1,0 +1,509 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "0504AM_CoreNLP_NER_Interface.ipynb",
+      "provenance": [],
+      "collapsed_sections": [],
+      "machine_shape": "hm"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "eRtRoABPrJix"
+      },
+      "source": [
+        "# Load Tacred Data"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "mBfpcMrirNOJ",
+        "outputId": "906044cf-af6c-4a59-8e35-2e0e9381f4f1"
+      },
+      "source": [
+        "#Tacred data\n",
+        "\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/tacred_sample.json\n",
+        "!cat tacred_sample.json > sample\n",
+        "\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/train.json?raw=true\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/test.json?raw=true\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/dev.json?raw=true\n",
+        "!cat train.json?raw=true > train\n",
+        "!cat test.json?raw=true > test\n",
+        "!cat dev.json?raw=true > dev\n",
+        "\n",
+        "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/challenge_set.json?raw=true\n",
+        "!cat challenge_set.json?raw=true > cre\n"
+      ],
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "--2021-05-04 15:37:57--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/tacred_sample.json\n",
+            "Resolving github.com (github.com)... 192.30.255.112\n",
+            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/tacred_sample.json [following]\n",
+            "--2021-05-04 15:37:58--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/tacred_sample.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.109.133, 185.199.111.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.109.133|:443... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 4144 (4.0K) [application/octet-stream]\n",
+            "Saving to: ‘tacred_sample.json’\n",
+            "\n",
+            "tacred_sample.json  100%[===================>]   4.05K  --.-KB/s    in 0s      \n",
+            "\n",
+            "2021-05-04 15:37:58 (61.1 MB/s) - ‘tacred_sample.json’ saved [4144/4144]\n",
+            "\n",
+            "--2021-05-04 15:37:58--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/train.json?raw=true\n",
+            "Resolving github.com (github.com)... 192.30.255.113\n",
+            "Connecting to github.com (github.com)|192.30.255.113|:443... connected.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/train.json [following]\n",
+            "--2021-05-04 15:37:58--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/train.json\n",
+            "Reusing existing connection to github.com:443.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/train.json [following]\n",
+            "--2021-05-04 15:37:58--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/train.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 106840207 (102M) [application/octet-stream]\n",
+            "Saving to: ‘train.json?raw=true’\n",
+            "\n",
+            "train.json?raw=true 100%[===================>] 101.89M   186MB/s    in 0.5s    \n",
+            "\n",
+            "2021-05-04 15:38:02 (186 MB/s) - ‘train.json?raw=true’ saved [106840207/106840207]\n",
+            "\n",
+            "--2021-05-04 15:38:02--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/test.json?raw=true\n",
+            "Resolving github.com (github.com)... 192.30.255.112\n",
+            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/test.json [following]\n",
+            "--2021-05-04 15:38:02--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/test.json\n",
+            "Reusing existing connection to github.com:443.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/test.json [following]\n",
+            "--2021-05-04 15:38:02--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/test.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 22886497 (22M) [application/octet-stream]\n",
+            "Saving to: ‘test.json?raw=true’\n",
+            "\n",
+            "test.json?raw=true  100%[===================>]  21.83M  78.3MB/s    in 0.3s    \n",
+            "\n",
+            "2021-05-04 15:38:03 (78.3 MB/s) - ‘test.json?raw=true’ saved [22886497/22886497]\n",
+            "\n",
+            "--2021-05-04 15:38:03--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/dev.json?raw=true\n",
+            "Resolving github.com (github.com)... 192.30.255.112\n",
+            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/dev.json [following]\n",
+            "--2021-05-04 15:38:03--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/dev.json\n",
+            "Reusing existing connection to github.com:443.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/dev.json [following]\n",
+            "--2021-05-04 15:38:04--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/dev.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 34077764 (32M) [application/octet-stream]\n",
+            "Saving to: ‘dev.json?raw=true’\n",
+            "\n",
+            "dev.json?raw=true   100%[===================>]  32.50M   106MB/s    in 0.3s    \n",
+            "\n",
+            "2021-05-04 15:38:05 (106 MB/s) - ‘dev.json?raw=true’ saved [34077764/34077764]\n",
+            "\n",
+            "--2021-05-04 15:38:05--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/challenge_set.json?raw=true\n",
+            "Resolving github.com (github.com)... 192.30.255.113\n",
+            "Connecting to github.com (github.com)|192.30.255.113|:443... connected.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/challenge_set.json [following]\n",
+            "--2021-05-04 15:38:06--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/challenge_set.json\n",
+            "Reusing existing connection to github.com:443.\n",
+            "HTTP request sent, awaiting response... 302 Found\n",
+            "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/challenge_set.json [following]\n",
+            "--2021-05-04 15:38:06--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/challenge_set.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 9407758 (9.0M) [application/octet-stream]\n",
+            "Saving to: ‘challenge_set.json?raw=true’\n",
+            "\n",
+            "challenge_set.json? 100%[===================>]   8.97M  50.4MB/s    in 0.2s    \n",
+            "\n",
+            "2021-05-04 15:38:06 (50.4 MB/s) - ‘challenge_set.json?raw=true’ saved [9407758/9407758]\n",
+            "\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "aMXrQ7FDrTXp"
+      },
+      "source": [
+        "## Have a look at what entity types does our data have\n",
+        "### Result: 23 different types"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "SWZA4ZerraOi",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "283ebb61-6dec-4d79-bf65-1a5014547257"
+      },
+      "source": [
+        "import json\n",
+        "from tqdm import tqdm\n",
+        "\n",
+        "# a function to see what types of NE does the data have\n",
+        "# result: 23 different types\n",
+        "def check_NERtypes_json(filename):\n",
+        "  my_set = set()\n",
+        "  with open(filename) as json_file:\n",
+        "    itemData = json.load(json_file)\n",
+        "  for item in itemData:\n",
+        "    if 'subj_type' in item.keys():\n",
+        "      my_set.add(item['subj_type'])\n",
+        "    if 'obj_type' in item.keys():\n",
+        "      my_set.add(item['obj_type'])\n",
+        "    if 'stanford_ner' in item.keys():\n",
+        "      my_set = my_set.union(set(item['stanford_ner']))        \n",
+        "  return my_set\n",
+        "\n",
+        "NER_type_set_train = check_NERtypes_json('train')\n",
+        "lst =list(NER_type_set_train)\n",
+        "sorted_lst = sorted(lst)\n",
+        "print(sorted_lst)\n",
+        "\n",
+        "\n",
+        "def tacred2string(filename):\n",
+        "  text_filename = filename.split('.')[0] + '_text.txt'\n",
+        "  tag_filename = filename.split('.')[0] + '_tag.json'\n",
+        "  text_file = open(text_filename, \"w\")\n",
+        "  tag_file = open(tag_filename, \"w\")\n",
+        "\n",
+        "  tag_dict = dict()\n",
+        "  tag_dict[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  with open(filename) as json_file:\n",
+        "    itemData = json.load(json_file)\n",
+        "  for item in tqdm(itemData): \n",
+        "    # warning: not every sentence in Tacred data ends with a proper terminal punctuations\n",
+        "    # we have to manually add new line to separate the sentences\n",
+        "    if 'token' in item.keys():\n",
+        "      sent = \" \".join(item['token']) + ' \\n'\n",
+        "      text_file.write(sent)    \n",
+        "    \n",
+        "    subj     = {\"text\": \" \".join(item['token'][item['subj_start'] : item['subj_end'] +1]), # end_idx is inclusive in Tacred data\n",
+        "                \"type\": item['subj_type'],\n",
+        "                \"span\": (item['subj_start'], item['subj_end'])} \n",
+        "    obj      = {\"text\": \" \".join(item['token'][item['obj_start'] : item['obj_end'] +1]), # end_idx is inclusive in Tacred data\n",
+        "                \"type\": item['obj_type'],\n",
+        "                \"span\": (item['obj_start'], item['obj_end'])} \n",
+        "    curr_tag = {\"id\": item['id'],\n",
+        "                \"entity\": [subj, obj]}\n",
+        "\n",
+        "    tag_dict[\"sentences\"].append(curr_tag) \n",
+        "\n",
+        "  json.dump(tag_dict, tag_file, indent =2, sort_keys = False)\n",
+        "  text_file.close()\n",
+        "  tag_file.close()\n",
+        "\n",
+        "  return"
+      ],
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "['CAUSE_OF_DEATH', 'CITY', 'COUNTRY', 'CRIMINAL_CHARGE', 'DATE', 'DURATION', 'IDEOLOGY', 'LOCATION', 'MISC', 'MONEY', 'NATIONALITY', 'NUMBER', 'O', 'ORDINAL', 'ORGANIZATION', 'PERCENT', 'PERSON', 'RELIGION', 'SET', 'STATE_OR_PROVINCE', 'TIME', 'TITLE', 'URL']\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "3bEdGkqGr03R"
+      },
+      "source": [
+        "## Tacred data pre-processing\n",
+        "#### We will get one text file, which is the pure text input for inference. And a tag file, which is the golden labels"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zfADfYCNr3Rx",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "2e00cc8d-6eb2-468b-fc05-f60df6610cb5"
+      },
+      "source": [
+        "\n",
+        "tacred2string('train')\n",
+        "tacred2string('test')\n",
+        "tacred2string('dev')\n",
+        "tacred2string('cre')\n"
+      ],
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "100%|██████████| 10844/10844 [00:00<00:00, 214558.80it/s]\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "i0O1BAwDemZJ"
+      },
+      "source": [
+        "### Now, use the Java script to inefernce text file\n",
+        "##### go to the folder of /stanford-corenlp-4.2.0, in command line use the command argument as shown below. Replace <XXX_text.txt> with the text file name, such as train_text.txt. Replace -mx8g with -mx10g if you want to increase the maximum allocated memory from 8gb to 10gb, for example.\n",
+        "\n",
+        "```\n",
+        "java -mx8g -cp '*' edu.stanford.nlp.pipeline.StanfordCoreNLP -annotators 'tokenize,ssplit,pos,lemma,ner' -ssplit.eolonly -file <XXX_text.txt> -outputFormat json\n",
+        "```\n",
+        "\n",
+        "##### After runing the inference script (it will takes up to 20mins), we will get a json output. Don't forget to rename the output as XXX_inference.json.\n",
+        "##### Besides NER results, this inference output has a lot of things we don't really need. Now, we will simplify the inference data to <XXX_simplified.json> and compare it against our tag file.\n",
+        "##### Don't forget: in the inference file, the end index is exclusive, we need to -1 to convert it into inclusive idx to match Tacred\n",
+        "##### This simplified file will be further filtered to only have the entities with the same types as our subject or object. <XXX_filtered.json>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "6GKX_sUqJEiL"
+      },
+      "source": [
+        "## Idendity pronouns\n",
+        "#### Given the XXX_tag.json file, we need to count the entities with PERSON type, to identify which are actually pronouns.\n",
+        "#### We will skip the pronouns when we evaluate the recall and other scores"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "PCLaxUnLUCJM"
+      },
+      "source": [
+        "# # Manually create a set of 49 most common pronouns. \n",
+        "# # If we consider the first letter can be both lower case and upper case (except 'I'), there are 97 these kind of instances\n",
+        "\n",
+        "# pronoun_lst = ['your', 'I', 'they', 'their', 'we', 'who', 'them', 'its', 'our', 'my',\n",
+        "#                'those', 'he', 'us', 'her', 'something', 'me', 'yourself', 'someone', 'everything', 'itself',\n",
+        "#                'everyone', 'themselves', 'anyone', 'him', 'whose', 'myself', 'everybody', 'ourselves', 'himself', 'somebody',\n",
+        "#                'yours', 'herself', 'whoever', 'you', 'that', 'it', 'this', 'what', 'which', 'these',\n",
+        "#                'his', 'she', 'lot', 'anything', 'whatever', 'nobody', 'none', 'mine', 'anybody']\n",
+        "# pronoun_set = set(pronoun_lst)\n",
+        "# for item in pronoun_lst:\n",
+        "#   pronoun_set.add(item.capitalize())\n",
+        "\n",
+        "# print(len(pronoun_set))\n",
+        "\n",
+        "# # we only exclude pronoun when the entity type was inferred as 'PERSON'\n",
+        "# def exclude_pronoun(entity, pronoun_set):\n",
+        "#   return entity['type']=='PERSON' and entity['text'] in pronoun_set"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DrBUmmXTerzZ"
+      },
+      "source": [
+        "def exact_match(inf, target):\n",
+        "  return inf['text'] == target['text'] and inf['type'] == target['type'] and inf['span'][0] == target['span'][0] and inf['span'][1] == target['span'][1]\n",
+        "\n",
+        "def partial_match(inf, target):\n",
+        "  # 1. is_outside = starts_before and ends_after\n",
+        "  # 2. starts_inside = start <= spn_start <= end\n",
+        "  # 3. ends_inside = start <= spn_end <= end\n",
+        "  if inf['text'] == target['text'] and inf['type'] == target['type']:\n",
+        "    return ((inf['span'][0] < target['span'][0] and inf['span'][1] > target['span'][1]) or\n",
+        "           (inf['span'][0] >= target['span'][0] and inf['span'][0] <= target['span'][1]) or\n",
+        "           (inf['span'][1] >= target['span'][0] and inf['span'][1] <= target['span'][1]))\n",
+        "  return False\n",
+        "\n",
+        "def simplify_eval_Inference(inf_filename, golden_filename):\n",
+        "  simp_file_name = inf_filename.split('.')[0] + '_simplified.json' \n",
+        "  filt_file_name = inf_filename.split('.')[0] + '_filtered.json' \n",
+        "  simplified_file = open(simp_file_name, \"w\")\n",
+        "  filtered_file = open(filt_file_name, \"w\")\n",
+        "\n",
+        "  tag_dict = dict()\n",
+        "  tag_dict[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  tag_dict_filtered = dict()\n",
+        "  tag_dict_filtered[\"sentences\"] = []  # a list of sentence-dict\n",
+        "  with open(inf_filename) as inf_file, open(golden_filename) as gold_file:\n",
+        "    itemData = json.load(inf_file)['sentences']\n",
+        "    goldData = json.load(gold_file)['sentences']\n",
+        "\n",
+        "  total_num_sent = len(itemData)\n",
+        "  num_T = 2 * total_num_sent\n",
+        "  num_P = 0.0\n",
+        "  num_TP_ex = 0.0\n",
+        "  num_TP_par = 0.0\n",
+        "  print(\"===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!=== \", total_num_sent, \" vs \", len(goldData))\n",
+        "  for i in tqdm(range(len(itemData))):\n",
+        "    inf_item, gold_item = itemData[i], goldData[i]\n",
+        "    curr_tag = {\"id\": gold_item['id'], # replace it with real id in gold items\n",
+        "                \"entity\": []}\n",
+        "    curr_tag_filtered = {\"id\": gold_item['id'], # replace it with real id in gold items\n",
+        "                \"entity\": []}   \n",
+        "    \n",
+        "    subj = gold_item['entity'][0]\n",
+        "    obj  = gold_item['entity'][1]\n",
+        "\n",
+        "    num_P += len(inf_item['entitymentions'])\n",
+        "    for ent in inf_item['entitymentions']:\n",
+        "      e = {\"text\": ent['text'],\n",
+        "            \"type\": ent['ner'],\n",
+        "            \"span\": (ent['tokenBegin'], ent['tokenEnd'] -1 ),\n",
+        "            \"in_tacred\": False} \n",
+        "      curr_tag[\"entity\"].append(e)\n",
+        "      if ent['ner'] == subj['type'] or ent['ner'] == obj['type']:\n",
+        "        curr_tag_filtered[\"entity\"].append(e)\n",
+        "    \n",
+        "      # ===== Check if we found the gold entity =======\n",
+        "      if partial_match(e, subj):\n",
+        "        num_TP_par += 1\n",
+        "        e['in_tacred'] = True\n",
+        "        if exact_match(e, subj):\n",
+        "          num_TP_ex += 1          \n",
+        "\n",
+        "      if partial_match(e, obj):\n",
+        "        num_TP_par += 1\n",
+        "        e['in_tacred'] = True\n",
+        "        if exact_match(e, obj):\n",
+        "          num_TP_ex += 1\n",
+        "          \n",
+        "\n",
+        "    tag_dict[\"sentences\"].append(curr_tag) \n",
+        "    tag_dict_filtered[\"sentences\"].append(curr_tag_filtered) \n",
+        "\n",
+        "  print(\"Comming out number of sentences: \", len(tag_dict[\"sentences\"]), \" vs \", len(tag_dict_filtered[\"sentences\"]))\n",
+        "  \n",
+        "  json.dump(tag_dict, simplified_file, indent =2, sort_keys = False)\n",
+        "  json.dump(tag_dict_filtered, filtered_file, indent =2, sort_keys = False)\n",
+        "  simplified_file.close()\n",
+        "  print(\"=====the simplified inference file is saved!====\")\n",
+        "  filtered_file.close()\n",
+        "  print(\"=====the filtered inference file is saved!====\")\n",
+        "\n",
+        "\n",
+        "  # ====== calculate scores ========\n",
+        "  recall_ex = float(num_TP_ex) / float(num_T)\n",
+        "  precision_ex = float(num_TP_ex) / float(num_P)\n",
+        "  f1_score_ex = 2 * recall_ex * precision_ex / (recall_ex + precision_ex)\n",
+        "\n",
+        "  recall_par = float(num_TP_par) / float(num_T)\n",
+        "  precision_par = float(num_TP_par) / float(num_P)\n",
+        "  f1_score_par = 2 * recall_par * precision_par / (recall_par + precision_par)\n",
+        "\n",
+        "  print(\"===== Results for Exact Match =====\")\n",
+        "  print(\"Recall: \", recall_ex)\n",
+        "  print(\"Precision: \", precision_ex)\n",
+        "  print(\"F1 Score: \", f1_score_ex )\n",
+        "\n",
+        "  print(\"===== Results for Partial Match =====\")\n",
+        "  print(\"Recall: \", recall_par)\n",
+        "  print(\"Precision: \", precision_par)\n",
+        "  print(\"F1 Score: \", f1_score_par )\n",
+        "\n",
+        "  return"
+      ],
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "y5_PBNWDn1Ci",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "5d2070d8-b544-4839-e2a3-dfa89078e640"
+      },
+      "source": [
+        "simplify_eval_Inference('train_inference.json', 'train_tag.json')\n",
+        "simplify_eval_Inference('test_inference.json', 'test_tag.json')\n",
+        "simplify_eval_Inference('dev_inference.json', 'dev_tag.json')\n",
+        "simplify_eval_Inference('cre_inference.json', 'cre_tag.json')"
+      ],
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            " 18%|█▊        | 1997/10844 [00:00<00:00, 11510.02it/s]"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!===  10844  vs  10844\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "100%|██████████| 10844/10844 [00:00<00:00, 22911.37it/s]\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "Comming out number of sentences:  10844  vs  10844\n",
+            "=====the simplified inference file is saved!====\n",
+            "=====the filtered inference file is saved!====\n",
+            "===== Results for Exact Match =====\n",
+            "Recall:  0.9400129103651789\n",
+            "Precision:  0.27871653952369235\n",
+            "F1 Score:  0.4299512832950208\n",
+            "===== Results for Partial Match =====\n",
+            "Recall:  0.9400129103651789\n",
+            "Precision:  0.27871653952369235\n",
+            "F1 Score:  0.4299512832950208\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,11 @@
 Group project for CS7650 Natural Language Processing <br /><br /><br />
 
 ## Version Info.<br />
-## 0501 (current version)<br />
+## 0504 (current version)<br />
+
+(1) Add the inference results for challenge dataset (CRE).<br /><br />
+
+## 0501<br />
 
 (1) Get rid of pronoun exclusion, since CoreNLP can recognize a significant proportion of pronouns<br />
 (2) Modified the output format, added a new Boolean field called "in_tacred" to denote whether the entity is at least martial match with the gold entities (subj or obj) in Tacred dataset.<br />

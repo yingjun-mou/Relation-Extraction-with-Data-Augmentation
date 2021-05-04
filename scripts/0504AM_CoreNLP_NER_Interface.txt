@@ -31,7 +31,7 @@
           "base_uri": "https://localhost:8080/"
         },
         "id": "mBfpcMrirNOJ",
-        "outputId": "906044cf-af6c-4a59-8e35-2e0e9381f4f1"
+        "outputId": "dc4c6198-6e5c-4d9d-b39f-48f78bb0651d"
       },
       "source": [
         "#Tacred data\n",
@@ -49,106 +49,106 @@
         "!wget -nc https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/challenge_set.json?raw=true\n",
         "!cat challenge_set.json?raw=true > cre\n"
       ],
-      "execution_count": 1,
+      "execution_count": 2,
       "outputs": [
         {
           "output_type": "stream",
           "text": [
-            "--2021-05-04 15:37:57--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/tacred_sample.json\n",
-            "Resolving github.com (github.com)... 192.30.255.112\n",
-            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "--2021-05-04 19:34:19--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/tacred_sample.json\n",
+            "Resolving github.com (github.com)... 140.82.121.4\n",
+            "Connecting to github.com (github.com)|140.82.121.4|:443... connected.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/tacred_sample.json [following]\n",
-            "--2021-05-04 15:37:58--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/tacred_sample.json\n",
-            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.109.133, 185.199.111.133, 185.199.110.133, ...\n",
-            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.109.133|:443... connected.\n",
+            "--2021-05-04 19:34:20--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/tacred_sample.json\n",
+            "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
+            "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
             "HTTP request sent, awaiting response... 200 OK\n",
             "Length: 4144 (4.0K) [application/octet-stream]\n",
             "Saving to: ‘tacred_sample.json’\n",
             "\n",
             "tacred_sample.json  100%[===================>]   4.05K  --.-KB/s    in 0s      \n",
             "\n",
-            "2021-05-04 15:37:58 (61.1 MB/s) - ‘tacred_sample.json’ saved [4144/4144]\n",
+            "2021-05-04 19:34:20 (70.2 MB/s) - ‘tacred_sample.json’ saved [4144/4144]\n",
             "\n",
-            "--2021-05-04 15:37:58--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/train.json?raw=true\n",
-            "Resolving github.com (github.com)... 192.30.255.113\n",
-            "Connecting to github.com (github.com)|192.30.255.113|:443... connected.\n",
+            "--2021-05-04 19:34:20--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/train.json?raw=true\n",
+            "Resolving github.com (github.com)... 140.82.121.4\n",
+            "Connecting to github.com (github.com)|140.82.121.4|:443... connected.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/train.json [following]\n",
-            "--2021-05-04 15:37:58--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/train.json\n",
+            "--2021-05-04 19:34:20--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/train.json\n",
             "Reusing existing connection to github.com:443.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/train.json [following]\n",
-            "--2021-05-04 15:37:58--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/train.json\n",
+            "--2021-05-04 19:34:20--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/train.json\n",
             "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
             "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
             "HTTP request sent, awaiting response... 200 OK\n",
             "Length: 106840207 (102M) [application/octet-stream]\n",
             "Saving to: ‘train.json?raw=true’\n",
             "\n",
-            "train.json?raw=true 100%[===================>] 101.89M   186MB/s    in 0.5s    \n",
+            "train.json?raw=true 100%[===================>] 101.89M   149MB/s    in 0.7s    \n",
             "\n",
-            "2021-05-04 15:38:02 (186 MB/s) - ‘train.json?raw=true’ saved [106840207/106840207]\n",
+            "2021-05-04 19:34:24 (149 MB/s) - ‘train.json?raw=true’ saved [106840207/106840207]\n",
             "\n",
-            "--2021-05-04 15:38:02--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/test.json?raw=true\n",
-            "Resolving github.com (github.com)... 192.30.255.112\n",
-            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "--2021-05-04 19:34:24--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/test.json?raw=true\n",
+            "Resolving github.com (github.com)... 140.82.121.3\n",
+            "Connecting to github.com (github.com)|140.82.121.3|:443... connected.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/test.json [following]\n",
-            "--2021-05-04 15:38:02--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/test.json\n",
+            "--2021-05-04 19:34:24--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/test.json\n",
             "Reusing existing connection to github.com:443.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/test.json [following]\n",
-            "--2021-05-04 15:38:02--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/test.json\n",
+            "--2021-05-04 19:34:24--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/test.json\n",
             "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
             "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
             "HTTP request sent, awaiting response... 200 OK\n",
             "Length: 22886497 (22M) [application/octet-stream]\n",
             "Saving to: ‘test.json?raw=true’\n",
             "\n",
-            "test.json?raw=true  100%[===================>]  21.83M  78.3MB/s    in 0.3s    \n",
+            "test.json?raw=true  100%[===================>]  21.83M  91.6MB/s    in 0.2s    \n",
             "\n",
-            "2021-05-04 15:38:03 (78.3 MB/s) - ‘test.json?raw=true’ saved [22886497/22886497]\n",
+            "2021-05-04 19:34:26 (91.6 MB/s) - ‘test.json?raw=true’ saved [22886497/22886497]\n",
             "\n",
-            "--2021-05-04 15:38:03--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/dev.json?raw=true\n",
-            "Resolving github.com (github.com)... 192.30.255.112\n",
-            "Connecting to github.com (github.com)|192.30.255.112|:443... connected.\n",
+            "--2021-05-04 19:34:26--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/dev.json?raw=true\n",
+            "Resolving github.com (github.com)... 140.82.121.4\n",
+            "Connecting to github.com (github.com)|140.82.121.4|:443... connected.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/dev.json [following]\n",
-            "--2021-05-04 15:38:03--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/dev.json\n",
+            "--2021-05-04 19:34:26--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/dev.json\n",
             "Reusing existing connection to github.com:443.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/dev.json [following]\n",
-            "--2021-05-04 15:38:04--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/dev.json\n",
+            "--2021-05-04 19:34:26--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/dev.json\n",
             "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
             "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
             "HTTP request sent, awaiting response... 200 OK\n",
             "Length: 34077764 (32M) [application/octet-stream]\n",
             "Saving to: ‘dev.json?raw=true’\n",
             "\n",
-            "dev.json?raw=true   100%[===================>]  32.50M   106MB/s    in 0.3s    \n",
+            "dev.json?raw=true   100%[===================>]  32.50M   110MB/s    in 0.3s    \n",
             "\n",
-            "2021-05-04 15:38:05 (106 MB/s) - ‘dev.json?raw=true’ saved [34077764/34077764]\n",
+            "2021-05-04 19:34:28 (110 MB/s) - ‘dev.json?raw=true’ saved [34077764/34077764]\n",
             "\n",
-            "--2021-05-04 15:38:05--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/challenge_set.json?raw=true\n",
-            "Resolving github.com (github.com)... 192.30.255.113\n",
-            "Connecting to github.com (github.com)|192.30.255.113|:443... connected.\n",
+            "--2021-05-04 19:34:28--  https://github.com/yingjun-mou/Improved-Relation-Extraction/blob/master/data/challenge_set.json?raw=true\n",
+            "Resolving github.com (github.com)... 140.82.121.3\n",
+            "Connecting to github.com (github.com)|140.82.121.3|:443... connected.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/challenge_set.json [following]\n",
-            "--2021-05-04 15:38:06--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/challenge_set.json\n",
+            "--2021-05-04 19:34:28--  https://github.com/yingjun-mou/Improved-Relation-Extraction/raw/master/data/challenge_set.json\n",
             "Reusing existing connection to github.com:443.\n",
             "HTTP request sent, awaiting response... 302 Found\n",
             "Location: https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/challenge_set.json [following]\n",
-            "--2021-05-04 15:38:06--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/challenge_set.json\n",
+            "--2021-05-04 19:34:28--  https://media.githubusercontent.com/media/yingjun-mou/Improved-Relation-Extraction/master/data/challenge_set.json\n",
             "Resolving media.githubusercontent.com (media.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...\n",
             "Connecting to media.githubusercontent.com (media.githubusercontent.com)|185.199.108.133|:443... connected.\n",
             "HTTP request sent, awaiting response... 200 OK\n",
             "Length: 9407758 (9.0M) [application/octet-stream]\n",
             "Saving to: ‘challenge_set.json?raw=true’\n",
             "\n",
-            "challenge_set.json? 100%[===================>]   8.97M  50.4MB/s    in 0.2s    \n",
+            "challenge_set.json? 100%[===================>]   8.97M  53.5MB/s    in 0.2s    \n",
             "\n",
-            "2021-05-04 15:38:06 (50.4 MB/s) - ‘challenge_set.json?raw=true’ saved [9407758/9407758]\n",
+            "2021-05-04 19:34:29 (53.5 MB/s) - ‘challenge_set.json?raw=true’ saved [9407758/9407758]\n",
             "\n"
           ],
           "name": "stdout"
@@ -172,7 +172,7 @@
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "outputId": "283ebb61-6dec-4d79-bf65-1a5014547257"
+        "outputId": "ea36b161-ac5d-431e-f284-166dcfabb456"
       },
       "source": [
         "import json\n",
@@ -233,7 +233,7 @@
         "\n",
         "  return"
       ],
-      "execution_count": 2,
+      "execution_count": 3,
       "outputs": [
         {
           "output_type": "stream",
@@ -261,7 +261,7 @@
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "outputId": "2e00cc8d-6eb2-468b-fc05-f60df6610cb5"
+        "outputId": "f5bb835e-5abf-4f69-cab9-628b9185360d"
       },
       "source": [
         "\n",
@@ -275,7 +275,10 @@
         {
           "output_type": "stream",
           "text": [
-            "100%|██████████| 10844/10844 [00:00<00:00, 214558.80it/s]\n"
+            "100%|██████████| 68124/68124 [00:01<00:00, 63112.56it/s]\n",
+            "100%|██████████| 15509/15509 [00:00<00:00, 70463.83it/s]\n",
+            "100%|██████████| 22631/22631 [00:00<00:00, 87551.72it/s]\n",
+            "100%|██████████| 10844/10844 [00:00<00:00, 217182.60it/s]\n"
           ],
           "name": "stderr"
         }
@@ -376,6 +379,7 @@
         "  num_P = 0.0\n",
         "  num_TP_ex = 0.0\n",
         "  num_TP_par = 0.0\n",
+        "  num_sameType = 0.0\n",
         "  print(\"===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!=== \", total_num_sent, \" vs \", len(goldData))\n",
         "  for i in tqdm(range(len(itemData))):\n",
         "    inf_item, gold_item = itemData[i], goldData[i]\n",
@@ -411,8 +415,10 @@
         "          num_TP_ex += 1\n",
         "          \n",
         "\n",
-        "    tag_dict[\"sentences\"].append(curr_tag) \n",
-        "    tag_dict_filtered[\"sentences\"].append(curr_tag_filtered) \n",
+        "    tag_dict[\"sentences\"].append(curr_tag)\n",
+        "    num_sameType += len(curr_tag_filtered[\"entity\"])      \n",
+        "    tag_dict_filtered[\"sentences\"].append(curr_tag_filtered)\n",
+        "    \n",
         "\n",
         "  print(\"Comming out number of sentences: \", len(tag_dict[\"sentences\"]), \" vs \", len(tag_dict_filtered[\"sentences\"]))\n",
         "  \n",
@@ -443,9 +449,16 @@
         "  print(\"Precision: \", precision_par)\n",
         "  print(\"F1 Score: \", f1_score_par )\n",
         "\n",
+        "  print(\"===== Results of Entity Filtering =====\")\n",
+        "  print(\"Total Gold Entities: \", num_T)\n",
+        "  print(\"Total Infr Entities: \", num_P)\n",
+        "  print(\"Exact Mathch Entities: \", num_TP_ex )\n",
+        "  print(\"Partial Mathch Entities: \", num_TP_par )\n",
+        "  print(\"SameType Entities: \", num_sameType)\n",
+        "\n",
         "  return"
       ],
-      "execution_count": 5,
+      "execution_count": 16,
       "outputs": []
     },
     {
@@ -455,51 +468,57 @@
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "outputId": "5d2070d8-b544-4839-e2a3-dfa89078e640"
+        "outputId": "a9d3fa52-aa35-4671-8b24-784238cc1069"
       },
       "source": [
         "simplify_eval_Inference('train_inference.json', 'train_tag.json')\n",
-        "simplify_eval_Inference('test_inference.json', 'test_tag.json')\n",
-        "simplify_eval_Inference('dev_inference.json', 'dev_tag.json')\n",
-        "simplify_eval_Inference('cre_inference.json', 'cre_tag.json')"
+        "# simplify_eval_Inference('test_inference.json', 'test_tag.json')\n",
+        "# simplify_eval_Inference('dev_inference.json', 'dev_tag.json')\n",
+        "# simplify_eval_Inference('cre_inference.json', 'cre_tag.json')"
       ],
-      "execution_count": 6,
+      "execution_count": 20,
       "outputs": [
         {
           "output_type": "stream",
           "text": [
-            " 18%|█▊        | 1997/10844 [00:00<00:00, 11510.02it/s]"
+            "\r  0%|          | 0/68124 [00:00<?, ?it/s]"
           ],
           "name": "stderr"
         },
         {
           "output_type": "stream",
           "text": [
-            "===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!===  10844  vs  10844\n"
+            "===DOUBLE CHECK THE LENGTHS ARE CONSISTANT!===  68124  vs  68124\n"
           ],
           "name": "stdout"
         },
         {
           "output_type": "stream",
           "text": [
-            "100%|██████████| 10844/10844 [00:00<00:00, 22911.37it/s]\n"
+            "100%|██████████| 68124/68124 [00:03<00:00, 19128.54it/s]\n"
           ],
           "name": "stderr"
         },
         {
           "output_type": "stream",
           "text": [
-            "Comming out number of sentences:  10844  vs  10844\n",
+            "Comming out number of sentences:  68124  vs  68124\n",
             "=====the simplified inference file is saved!====\n",
             "=====the filtered inference file is saved!====\n",
             "===== Results for Exact Match =====\n",
-            "Recall:  0.9400129103651789\n",
-            "Precision:  0.27871653952369235\n",
-            "F1 Score:  0.4299512832950208\n",
+            "Recall:  0.8882625800011743\n",
+            "Precision:  0.24664647691561473\n",
+            "F1 Score:  0.3860870341954234\n",
             "===== Results for Partial Match =====\n",
-            "Recall:  0.9400129103651789\n",
-            "Precision:  0.27871653952369235\n",
-            "F1 Score:  0.4299512832950208\n"
+            "Recall:  0.8882625800011743\n",
+            "Precision:  0.24664647691561473\n",
+            "F1 Score:  0.3860870341954234\n",
+            "===== Results of Entity Filtering =====\n",
+            "Total Gold Entities:  136248\n",
+            "Total Infr Entities:  490678.0\n",
+            "Exact Mathch Entities:  121024.0\n",
+            "Partial Mathch Entities:  121024.0\n",
+            "SameType Entities:  264290.0\n"
           ],
           "name": "stdout"
         }
